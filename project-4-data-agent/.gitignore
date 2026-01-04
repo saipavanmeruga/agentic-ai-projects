@@ -1,0 +1,16 @@
+.cursor
+.vscode
+.env
+.json
+.mov
+.png
+*.pyc
+.pyo
+.pyd
+.pyw
+.pyz
+.pywz
+.pyzw
+.pyzwz
+agenticenv/
+**/__pycache__/
