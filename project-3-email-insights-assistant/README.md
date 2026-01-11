@@ -1,5 +1,3 @@
-Below are **two deliverables** you asked for — a **LinkedIn post** and a **README.md** tailored to the *Email Insights Agent* architecture you outlined.
-
 ## README.md
 
 
