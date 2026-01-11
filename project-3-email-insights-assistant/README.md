@@ -68,7 +68,7 @@ You will need:
    ```bash
    git clone https://github.com/your-org/email-insights-agent.git
    cd email-insights-agent
-````
+  ````
 
 2. **Create and activate a virtual environment**
 
