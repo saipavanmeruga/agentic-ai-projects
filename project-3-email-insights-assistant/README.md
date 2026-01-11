@@ -2,7 +2,7 @@ Below are **two deliverables** you asked for — a **LinkedIn post** and a **REA
 
 ## README.md
 
-````markdown
+
 # Email Insights Agent
 
 A modular AI-powered system that ingests email data, indexes it, and answers analytical queries with narrative insights and visualizations using agent-oriented orchestration.
