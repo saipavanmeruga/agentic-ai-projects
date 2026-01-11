@@ -1,0 +1,114 @@
+name: pulseops
+
+services:
+  redpanda:
+    image: redpandadata/redpanda:latest
+    container_name: pulseops-redpanda
+    command: 
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - "1G"
+      - --reserve-memory
+      - "0M"
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - PLAINTEXT://redpanda:9092,OUTSIDE://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
+      - --pandaproxy-addr
+      - 0.0.0.0:8082
+      - --advertise-pandaproxy-addr
+      - redpanda:8082
+    ports:
+      - 19092:19092
+      - 8082:8082
+      - 9092:9092
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health --brokers redpanda:9092 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 15
+  redpanda-console:
+    image: redpandadata/console:v2.6.1
+    container_name: pulseops-redpanda-console
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: "redpanda:9092"
+    ports:
+      - "8080:8080"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: pulseops-postgres
+    environment:
+      POSTGRES_USER: pulseops
+      POSTGRES_PASSWORD: pulseops
+      POSTGRES_DB: pulseops
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulseops -d pulseops"]
+      interval: 30s
+      timeout: 5s
+      retries: 15
+
+  qdrant:
+    image: qdrant/qdrant:v1.11.3
+    container_name: pulseops-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6334/healthz | grep -q 'ok'"]
+      interval: 30s
+      timeout: 5s
+      retries: 15
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.99.0
+    container_name: pulseops-otel
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+     - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      - prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pulseops-promtheus
+    volumes:
+     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+     - "9090:9090"
+     
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pulseops-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  qdrant_data:
+  grafana_data:
+  postgres_data:
+ 
+
+
