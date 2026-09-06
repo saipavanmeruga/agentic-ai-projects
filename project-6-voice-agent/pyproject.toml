@@ -1,0 +1,20 @@
+[project]
+name = "project-6-voice-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "saipavanmeruga", email = "saipavan.meruga@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "sqlalchemy>=2.0.52",
+    "uvicorn>=0.52.4",
+]
+
+[project.scripts]
+project-6-voice-agent = "project_6_voice_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
